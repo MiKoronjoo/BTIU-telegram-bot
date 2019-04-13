@@ -8,14 +8,25 @@ from config import *
 from consts import *
 from classes import *
 
+users = []
 
-def handle_chat(msg):
+
+def handle_chat(msg: dict) -> None:
+    global users
+    users: list  # python 3.6+ syntax
     content_type, chat_type, chat_id = telepot.glance(msg)
     if chat_type == u'private':
         if content_type == 'text':
-            user = User(chat_id)
+            if chat_id not in users:
+                this_user = User(chat_id)
+                users.append(this_user)
+            else:
+                this_user = users[users.index(chat_id)]
+
             try:
-                user.say(msg['text'])
+                send_message = this_user.say(msg['text'], bot)
+                if send_message:
+                    bot.sendMessage(chat_id, msg_state[this_user.state.value])
             except StateError:
                 bot.sendMessage(chat_id, 'ERROR')
             except InputError:
