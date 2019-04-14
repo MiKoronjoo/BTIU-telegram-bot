@@ -132,15 +132,18 @@ class User:
 
         raise InputError('"%s" is not a standard input' % message)
 
-    def command(self, cmd: str, bot: telepot.Bot) -> None:
+    def command(self, cmd: str, bot: telepot.Bot) -> bool:
         if cmd == '/start':
-            bot.sendMessage(self.id, msg_start, reply_markup=rkb_state[self.state.value])
+            bot.sendMessage(self.id, msg_start)
+            return True
 
         elif cmd == '/main_menu':
             self.state = State.MAIN_MENU
+            return True
 
         elif cmd == '/help':
             bot.sendMessage(self.id, msg_help, reply_markup=rkb_state[self.state.value])
+            return  False
 
         else:
             raise CommandError('Command "%s" is not valid' % cmd)

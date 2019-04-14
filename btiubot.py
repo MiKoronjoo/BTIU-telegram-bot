@@ -24,16 +24,20 @@ def handle_chat(msg: dict) -> None:
 
             try:
                 if msg['text'][0] == '/':
-                    this_user.command(msg['text'], bot)
-                    return
-                send_message = this_user.say(msg['text'], bot)
+                    send_message = this_user.command(msg['text'], bot)
+
+                else:
+                    send_message = this_user.say(msg['text'], bot)
+
                 if send_message:
                     bot.sendMessage(chat_id, msg_state[this_user.state.value],
                                     reply_markup=rkb_state[this_user.state.value])
             except StateError:
-                bot.sendMessage(chat_id, 'ERROR')
+                bot.sendMessage(chat_id, err_bad_input)
             except InputError:
-                bot.sendMessage(chat_id, 'BAD INPUT')
+                bot.sendMessage(chat_id, err_bad_input)
+            except CommandError:
+                bot.sendMessage(chat_id, err_bad_cmd)
 
 
 bot = telepot.Bot(BOT_TOKEN)
