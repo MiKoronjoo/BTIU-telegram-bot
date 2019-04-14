@@ -2,8 +2,6 @@ import enum
 
 import telepot
 
-from consts import *
-
 
 class State(enum.Enum):
     #
@@ -22,6 +20,9 @@ class State(enum.Enum):
     SOALINO = 'SOALINO'
     ###
     SOALINO_98 = 'SOALINO_98'
+
+
+from consts import *
 
 
 class StateError(Exception):
@@ -133,13 +134,13 @@ class User:
 
     def command(self, cmd: str, bot: telepot.Bot) -> None:
         if cmd == '/start':
-            bot.sendMessage(self.id, msg_start)
+            bot.sendMessage(self.id, msg_start, reply_markup=rkb_state[self.state.value])
 
         elif cmd == '/main_menu':
             self.state = State.MAIN_MENU
 
         elif cmd == '/help':
-            bot.sendMessage(self.id, msg_help)
+            bot.sendMessage(self.id, msg_help, reply_markup=rkb_state[self.state.value])
 
         else:
             raise CommandError('Command "%s" is not valid' % cmd)

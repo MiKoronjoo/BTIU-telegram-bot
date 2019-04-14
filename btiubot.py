@@ -5,7 +5,6 @@ from telepot.loop import MessageLoop
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 
 from config import *
-from consts import *
 from classes import *
 
 users = []
@@ -13,7 +12,7 @@ users = []
 
 def handle_chat(msg: dict) -> None:
     global users
-    users: list  # python 3.6+ syntax
+    # users: list  # python 3.6+ syntax
     content_type, chat_type, chat_id = telepot.glance(msg)
     if chat_type == u'private':
         if content_type == 'text':
@@ -24,9 +23,13 @@ def handle_chat(msg: dict) -> None:
                 this_user = users[users.index(chat_id)]
 
             try:
+                if msg['text'][0] == '/':
+                    this_user.command(msg['text'], bot)
+                    return
                 send_message = this_user.say(msg['text'], bot)
                 if send_message:
-                    bot.sendMessage(chat_id, msg_state[this_user.state.value])
+                    bot.sendMessage(chat_id, msg_state[this_user.state.value],
+                                    reply_markup=rkb_state[this_user.state.value])
             except StateError:
                 bot.sendMessage(chat_id, 'ERROR')
             except InputError:
@@ -34,7 +37,7 @@ def handle_chat(msg: dict) -> None:
 
 
 bot = telepot.Bot(BOT_TOKEN)
-MessageLoop(handle_chat, bot).run_as_thread()
+MessageLoop(bot, handle_chat).run_as_thread()
 
 while True:
     time.sleep(30)
