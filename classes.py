@@ -20,6 +20,21 @@ class State(enum.Enum):
     SOALINO = 'SOALINO'
     ###
     SOALINO_98 = 'SOALINO_98'
+    # -------------------------#
+    FULL_NAME = 'FULL_NAME'
+    PICTURE = 'PICTURE'
+    UNIVERSITY = 'UNIVERSITY'
+    COMMITTEE = 'COMMITTEE'
+    AGE = 'AGE'
+    PHONE_NUMBER = 'PHONE_NUMBER'
+    SHIRAZI = 'SHIRAZI'
+    SCHOOL_INFO = 'SCHOOL_INFO'
+    SCHOOL_TYPE = 'SCHOOL_TYPE'
+    HOME_ADDR = 'HOME_ADDR'
+    HAVE_CAR = 'HAVE_CAR'
+    KNOWN_SCHOOLS = 'KNOWN_SCHOOLS'
+    FREE_TIMES = 'FREE_TIMES'
+    IDEA_AT_ALL = 'IDEA_AT_ALL'
 
 
 from consts import *
@@ -143,7 +158,121 @@ class User:
 
         elif cmd == '/help':
             bot.sendMessage(self.id, msg_help, reply_markup=rkb_state[self.state.value])
-            return  False
+            return False
+
+        elif cmd.startswith('/start '):
+            bot.sendMessage(self.id, 'info')
+            return True
 
         else:
             raise CommandError('Command "%s" is not valid' % cmd)
+
+
+class BtiuUser(User):
+    INFO_STATES = [State.FULL_NAME, State.PICTURE, State.UNIVERSITY, State.COMMITTEE, State.AGE, State.PHONE_NUMBER,
+                   State.SHIRAZI, State.SCHOOL_INFO, State.SCHOOL_TYPE, State.HOME_ADDR, State.HAVE_CAR,
+                   State.KNOWN_SCHOOLS, State.FREE_TIMES, State.IDEA_AT_ALL]
+
+    def __init__(self, user_id: int) -> None:
+        super().__init__(user_id)
+        self.state = State.FULL_NAME
+
+    def back_step(self) -> None:
+        if self.state == State.SCHOOL_TYPE:
+            self.state = State.SHIRAZI
+            return
+
+        back_index = BtiuUser.INFO_STATES.index(self.state) - 1
+        self.state = BtiuUser.INFO_STATES[back_index]
+
+    def next_step(self, jump: bool = False) -> None:
+        next_index = BtiuUser.INFO_STATES.index(self.state) + 1 + jump
+        self.state = BtiuUser.INFO_STATES[next_index]
+
+    def say_info(self, message: str) -> bool:
+        if message == bl_back and self.state != State.FULL_NAME:
+            self.back_step()
+            return True
+
+        elif self.state == State.FULL_NAME:
+            self.full_name = message
+            self.next_step()
+            return True
+
+        elif self.state == State.UNIVERSITY:
+            self.university = message
+            self.next_step()
+            return True
+
+        elif self.state == State.COMMITTEE:
+            self.committee = message
+            self.next_step()
+            return True
+
+        elif self.state == State.AGE:
+            self.age = message
+            self.next_step()
+            return True
+
+        elif self.state == State.PHONE_NUMBER:
+            self.phone_number = message
+            self.next_step()
+            return True
+
+        elif self.state == State.SHIRAZI:
+            if message == bl_yes:
+                self.next_step()
+            elif message == bl_no:
+                self.next_step(True)
+            else:
+                raise InputError('')
+
+            return True
+
+        elif self.state == State.SCHOOL_INFO:
+            self.school_info = message
+            self.next_step()
+            return True
+
+        elif self.state == State.SCHOOL_TYPE:
+            if message in [bl_st_tiz, bl_st_dol, bl_st_ghe, bl_st_othr]:
+                self.school_type = message
+                self.next_step()
+            else:
+                raise InputError('')
+
+            return True
+
+        elif self.state == State.HOME_ADDR:
+            self.home_addr = message
+            self.next_step()
+            return True
+
+        elif self.state == State.HAVE_CAR:
+            if message == bl_yes:
+                self.has_car = True
+            elif message == bl_no:
+                self.has_car = False
+            else:
+                raise InputError('')
+
+            self.next_step()
+            return True
+
+        elif self.state == State.KNOWN_SCHOOLS:
+            self.known_schools = message
+            self.next_step()
+            return True
+
+        elif self.state == State.FREE_TIMES:
+            assert message.split('\n') == 5
+            self.free_times = message
+            self.next_step()
+            return True
+
+        elif self.state == State.IDEA_AT_ALL:
+            self.idea = message
+            self.state = State.MAIN_MENU
+            return True
+
+        raise InputError('')

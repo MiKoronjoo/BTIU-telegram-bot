@@ -1,4 +1,5 @@
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup
+from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup, \
+    ReplyKeyboardRemove
 
 from classes import State
 
@@ -31,6 +32,14 @@ bl_soalino_send_answer = '✅ ارسال پاسخ سوالینو'
 bl_back = '🔙 بازگشت'
 bl_goto_main = '📋 منوی اصلی'
 
+bl_yes = '✅ بله'
+bl_no = '❎ خیر'
+bl_st_tiz = 'تیزهوشان و نمونه دولتی'
+bl_st_dol = 'دولتی'
+bl_st_ghe = 'غیر انتفاعی'
+bl_st_othr = 'سایر'
+bl_no_idea = 'ایده‌ای ندارم، اطلاعات رو ثبت کن'
+
 # error messages
 err_bad_input = 'لطفا یکی از دکمه‌ها رو انتخاب کن!'
 err_bad_cmd = '''دستور مورد نظر پیدا نشد 🤷‍♂️
@@ -60,6 +69,15 @@ msg_intro = '''قرار شده ما کتاب معرفی کنیم ولی دلمو
 کتاب های خوب بهمون پیشنهاد کنید تا ما بتونیم کتابای بهتر معرفی کنیم.
 منتظریما... 📖'''
 
+free_time_msg = '''ساعتای خالی‌ت در طول هفته رو بفرست (حتما به فرمتی که تو مثال زده شده، بفرست)
+مثال: 👇
+
+شنبه: 10-12 13:30-17:45
+یکشنبه:
+دوشنبه: 8-13
+سه‌شنبه: 7:30-11
+چهارشنبه:'''
+
 msg_state = {
     State.MAIN_MENU.value: 'لطفا یکی از گزینه‌ها رو انتخاب کن 🙂',
     State.TASTE_OF_TEA.value: 'به طعم چای خوش اومدی 🙌',
@@ -69,6 +87,21 @@ msg_state = {
     State.INTRODUCTION.value: msg_intro,
     State.SOALINO.value: 'به سوالینو خوش اومدی 🙌',
     State.SOALINO_98.value: 'لطفا انتخاب کن 👀',
+
+    State.FULL_NAME.value: 'اسم و فامیل؟',
+    State.PICTURE.value: 'لطفا عکست رو برای بات بفرست',
+    State.UNIVERSITY.value: 'رشته و دانشگاه؟',
+    State.COMMITTEE.value: 'کدوم کمیته هستی؟',
+    State.AGE.value: 'سن؟',
+    State.PHONE_NUMBER.value: 'شماره موبایل؟',
+    State.SHIRAZI.value: 'شیرازی هستی؟ (برای جواب لطفا از دکمه‌ها استفاده کن)',
+    State.SCHOOL_INFO.value: 'اسم دبیرستان خودت همراه با آدرس کلی؟',
+    State.SCHOOL_TYPE.value: 'نوع دبیرستانت رو انتخاب کن:',
+    State.HOME_ADDR.value: 'محدوده‌ی سکونت؟',
+    State.HAVE_CAR.value: 'ماشین داری؟! (لطفا انتخاب کن)',
+    State.KNOWN_SCHOOLS.value: 'مدارسی که تو اونا دانش‌آموزای پایه‌های ۹ام تا ۱۲ام رو میشناسی، ذکر کن!',
+    State.FREE_TIMES.value: free_time_msg,
+    State.IDEA_AT_ALL.value: 'از هر ایده ای در مورد تبلیغات در مدارس استقبال می‌شود 🙂',
 }
 
 msg_contact_us = '''همايش زنگ تفريح در دانشگاه
@@ -117,6 +150,8 @@ books_list = [['1️⃣ - جنگ که تمام شد بیدارم کن —- نو�
               ['2️⃣ - شازده کوچولو —- نوشته آنتوان دو سنت اگزوپری'],
               ['3️⃣ - رز گمشده —- نوشته سردار ازکان']]
 
+rkb_back = keyboard_maker([[bl_back]])
+
 rkb_state = {
     State.MAIN_MENU.value: keyboard_maker([[bl_soalino, bl_taste_of_tea], [bl_contact_us]]),
     State.TASTE_OF_TEA.value: keyboard_maker(
@@ -127,4 +162,19 @@ rkb_state = {
     State.INTRODUCTION.value: keyboard_maker([[bl_back], [bl_goto_main]]),
     State.SOALINO.value: keyboard_maker([[bl_what_is_soalino, bl_soalino_98], [bl_back]]),
     State.SOALINO_98.value: keyboard_maker([[bl_soalino_question, bl_soalino_send_answer], [bl_back, bl_goto_main]]),
+
+    State.FULL_NAME: ReplyKeyboardRemove(),
+    State.PICTURE: rkb_back,
+    State.UNIVERSITY: rkb_back,
+    State.COMMITTEE: rkb_back,
+    State.AGE: rkb_back,
+    State.PHONE_NUMBER: rkb_back,
+    State.SHIRAZI: keyboard_maker([[bl_no, bl_yes], [bl_back]]),
+    State.SCHOOL_INFO: rkb_back,
+    State.SCHOOL_TYPE: keyboard_maker([[bl_st_tiz], [bl_st_dol], [bl_st_ghe], [bl_st_othr], [bl_back]]),
+    State.HOME_ADDR: rkb_back,
+    State.HAVE_CAR: keyboard_maker([[bl_no, bl_yes], [bl_back]]),
+    State.KNOWN_SCHOOLS: rkb_back,
+    State.FREE_TIMES: rkb_back,
+    State.IDEA_AT_ALL: keyboard_maker([[bl_no_idea], [bl_back]]),
 }
