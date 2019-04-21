@@ -161,7 +161,8 @@ class User:
             return False
 
         elif cmd.startswith('/start '):
-            bot.sendMessage(self.id, 'info')
+            bot.sendMessage(self.id, msg_info)
+            self.state = State.FULL_NAME
             return True
 
         else:
@@ -176,6 +177,8 @@ class BtiuUser(User):
     def __init__(self, user_id: int) -> None:
         super().__init__(user_id)
         self.state = State.FULL_NAME
+        self.file_id = ''
+        self.school_info = ''
 
     def back_step(self) -> None:
         if self.state == State.SCHOOL_TYPE:
@@ -189,7 +192,7 @@ class BtiuUser(User):
         next_index = BtiuUser.INFO_STATES.index(self.state) + 1 + jump
         self.state = BtiuUser.INFO_STATES[next_index]
 
-    def say_info(self, message: str) -> bool:
+    def say_info(self, message: str, bot: telepot.Bot) -> bool:
         if message == bl_back and self.state != State.FULL_NAME:
             self.back_step()
             return True
@@ -265,14 +268,26 @@ class BtiuUser(User):
             return True
 
         elif self.state == State.FREE_TIMES:
-            assert message.split('\n') == 5
+            assert len(message.split('\n')) == 5
             self.free_times = message
             self.next_step()
             return True
 
         elif self.state == State.IDEA_AT_ALL:
             self.idea = message
+            self.send_info(bot)
             self.state = State.MAIN_MENU
             return True
 
+        elif self.state == State.PICTURE:
+            bot.sendMessage(self.id, '')
+            return False
+
         raise InputError('')
+
+    def send_info(self, bot: telepot.Bot) -> None:
+        info = info_template % (
+            self.id, self.full_name, self.university, self.committee, self.age, self.phone_number, self.school_info,
+            self.school_type, self.home_addr, self.has_car, self.known_schools, self.idea) + '\n\n' + self.free_times
+        bot.sendMessage(self.id, info, 'Markdown')
+        bot.sendDocument(self.id, self.file_id)

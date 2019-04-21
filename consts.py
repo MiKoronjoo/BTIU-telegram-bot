@@ -45,6 +45,10 @@ err_bad_input = 'لطفا یکی از دکمه‌ها رو انتخاب کن!'
 err_bad_cmd = '''دستور مورد نظر پیدا نشد 🤷‍♂️
 /help'''
 
+err_free_time = 'لطفا ساعات خالی رو با فرمت گفته شده بفرست (5 خط و تو هر خط ساعات آزاد اون روز از هفته رو بنویس!)'
+err_photo = 'لطفا عکس رو به عنوان فایل بفرست (send as a file)'
+err_size = 'سایز عکس باید کمتر از 10MB باشه!'
+
 # messages
 msg_start = 'خوش اومدی 😊'
 msg_help = '''برای استفاده از بات میتونی از دکمه‌ها استفاده کنی یا یکی از دستورات زیر رو انتخاب کنی:
@@ -69,6 +73,10 @@ msg_intro = '''قرار شده ما کتاب معرفی کنیم ولی دلمو
 کتاب های خوب بهمون پیشنهاد کنید تا ما بتونیم کتابای بهتر معرفی کنیم.
 منتظریما... 📖'''
 
+msg_info = '''لطفا اطلاعات خواسته شده رو کامل و صحیح بفرست 🙂
+هرجا که اشتباه شد میتونی با دکمه "🔙 بازگشت" برگردی به مرحله قبل
+با تشکر 🙏'''
+
 free_time_msg = '''ساعتای خالی‌ت در طول هفته رو بفرست (حتما به فرمتی که تو مثال زده شده، بفرست)
 مثال: 👇
 
@@ -89,7 +97,7 @@ msg_state = {
     State.SOALINO_98.value: 'لطفا انتخاب کن 👀',
 
     State.FULL_NAME.value: 'اسم و فامیل؟',
-    State.PICTURE.value: 'لطفا عکست رو برای بات بفرست',
+    State.PICTURE.value: 'لطفا عکست رو برای بات بفرست (عکس رو به عنوان فایل بفرست (as a file) - حداکثر سایز 10MB)',
     State.UNIVERSITY.value: 'رشته و دانشگاه؟',
     State.COMMITTEE.value: 'کدوم کمیته هستی؟',
     State.AGE.value: 'سن؟',
@@ -137,6 +145,23 @@ msg_soalino_question = '''جنس خوشبختی از چی میتونه باشه�
 msg_soalino_send_answer = '''❌مهلت ارسال پاسخ سوالینو 98 به پایان رسیده است...
 منتظر اعلام نتایج باشید...📝'''
 
+info_template = '''[TELEGRAM](tg://user?id=%d)
+اسم: %s
+رشته و دانشگاه: %s
+کمیته: %s
+سن: %s
+شماره موبایل: %s
+اسم دبیرستان و آدرس: %s
+نوع دبیرستان: %s
+محدوده سکونت: %s
+ماشین داری؟ %s
+مدارسی که میشناسی:
+%s
+
+ایده:
+%s'''
+
+
 # inline keyboards
 ikb_contact_us = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text='BTIU Contact', url='https://t.me/btiu_contact')],
@@ -163,18 +188,18 @@ rkb_state = {
     State.SOALINO.value: keyboard_maker([[bl_what_is_soalino, bl_soalino_98], [bl_back]]),
     State.SOALINO_98.value: keyboard_maker([[bl_soalino_question, bl_soalino_send_answer], [bl_back, bl_goto_main]]),
 
-    State.FULL_NAME: ReplyKeyboardRemove(),
-    State.PICTURE: rkb_back,
-    State.UNIVERSITY: rkb_back,
-    State.COMMITTEE: rkb_back,
-    State.AGE: rkb_back,
-    State.PHONE_NUMBER: rkb_back,
-    State.SHIRAZI: keyboard_maker([[bl_no, bl_yes], [bl_back]]),
-    State.SCHOOL_INFO: rkb_back,
-    State.SCHOOL_TYPE: keyboard_maker([[bl_st_tiz], [bl_st_dol], [bl_st_ghe], [bl_st_othr], [bl_back]]),
-    State.HOME_ADDR: rkb_back,
-    State.HAVE_CAR: keyboard_maker([[bl_no, bl_yes], [bl_back]]),
-    State.KNOWN_SCHOOLS: rkb_back,
-    State.FREE_TIMES: rkb_back,
-    State.IDEA_AT_ALL: keyboard_maker([[bl_no_idea], [bl_back]]),
+    State.FULL_NAME.value: ReplyKeyboardRemove(),
+    State.PICTURE.value: rkb_back,
+    State.UNIVERSITY.value: rkb_back,
+    State.COMMITTEE.value: rkb_back,
+    State.AGE.value: rkb_back,
+    State.PHONE_NUMBER.value: rkb_back,
+    State.SHIRAZI.value: keyboard_maker([[bl_no, bl_yes], [bl_back]]),
+    State.SCHOOL_INFO.value: rkb_back,
+    State.SCHOOL_TYPE.value: keyboard_maker([[bl_st_tiz], [bl_st_dol], [bl_st_ghe], [bl_st_othr], [bl_back]]),
+    State.HOME_ADDR.value: rkb_back,
+    State.HAVE_CAR.value: keyboard_maker([[bl_no, bl_yes], [bl_back]]),
+    State.KNOWN_SCHOOLS.value: rkb_back,
+    State.FREE_TIMES.value: rkb_back,
+    State.IDEA_AT_ALL.value: keyboard_maker([[bl_no_idea], [bl_back]]),
 }

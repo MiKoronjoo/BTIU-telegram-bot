@@ -1,8 +1,8 @@
+import pprint
 import time
 
 import telepot
 from telepot.loop import MessageLoop
-from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 
 from config import *
 from classes import *
@@ -11,8 +11,10 @@ users = []
 
 
 def handle_chat(msg: dict) -> None:
+    # pprint.pprint(msg)
+    # return
     global users
-    users: list  # python 3.6+ syntax
+    # users: list
     content_type, chat_type, chat_id = telepot.glance(msg)
     if chat_type == u'private':
         if chat_id not in users:
@@ -27,6 +29,7 @@ def handle_chat(msg: dict) -> None:
                 if type(this_user) != BtiuUser:
                     users.remove(this_user)
                     this_user = BtiuUser(chat_id)
+                    users.append(this_user)
 
         if content_type == 'text':
             try:
@@ -34,7 +37,10 @@ def handle_chat(msg: dict) -> None:
                     send_message = this_user.command(msg['text'], bot)
 
                 else:
-                    send_message = this_user.say(msg['text'], bot)
+                    if this_user.state in BtiuUser.INFO_STATES:
+                        send_message = this_user.say_info(msg['text'], bot)
+                    else:
+                        send_message = this_user.say(msg['text'], bot)
 
                 if send_message:
                     bot.sendMessage(chat_id, msg_state[this_user.state.value],
@@ -45,6 +51,20 @@ def handle_chat(msg: dict) -> None:
                 bot.sendMessage(chat_id, err_bad_input)
             except CommandError:
                 bot.sendMessage(chat_id, err_bad_cmd)
+            except AssertionError:
+                bot.sendMessage(chat_id, err_free_time)
+
+        elif this_user.state == State.PICTURE:
+            if content_type == 'photo':
+                bot.sendMessage(chat_id, err_photo)
+            elif content_type == 'document':
+                if msg['document']['file_size'] > 10 * 1024 * 1024:
+                    bot.sendMessage(chat_id, err_size)
+                else:
+                    this_user.file_id = msg['document']['file_id']
+                    this_user.state = State.UNIVERSITY
+                    bot.sendMessage(chat_id, msg_state[this_user.state.value],
+                                    reply_markup=rkb_state[this_user.state.value])
 
 
 bot = telepot.Bot(BOT_TOKEN)
