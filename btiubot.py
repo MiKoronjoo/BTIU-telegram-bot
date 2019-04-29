@@ -4,7 +4,7 @@ import time
 import telepot
 from telepot.loop import MessageLoop
 
-from config import *
+from config import BOT_TOKEN, hidden_code
 from classes import *
 
 users = []
@@ -48,9 +48,9 @@ def handle_chat(msg: dict) -> None:
             except StateError:
                 bot.sendMessage(chat_id, err_bad_input)
             except InputError:
-                bot.sendMessage(chat_id, err_bad_input)
+                bot.sendMessage(chat_id, err_bad_input, reply_markup=rkb_state[this_user.state.value])
             except CommandError:
-                bot.sendMessage(chat_id, err_bad_cmd)
+                bot.sendMessage(chat_id, err_bad_cmd, reply_markup=rkb_state[this_user.state.value])
             except AssertionError:
                 bot.sendMessage(chat_id, err_free_time)
 

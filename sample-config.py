@@ -1,3 +1,3 @@
 BOT_TOKEN = ''
-admin_id = 0
+admins = []
 hidden_code = ''

@@ -38,6 +38,7 @@ class State(enum.Enum):
 
 
 from consts import *
+from config import admins
 
 
 class StateError(Exception):
@@ -124,7 +125,13 @@ class User:
                 return False
 
         elif self.state == State.INTRODUCTION:
-            # TODO: send 'message' to admin
+            for admin in admins:
+                try:
+                    bot.sendMessage(admin, (sugg_templete + message) % self.id, 'Markdown')
+                except:
+                    pass
+
+            bot.sendMessage(self.id, msg_tnx)
             self.back()
             return True
 
@@ -137,11 +144,23 @@ class User:
                 return True
 
         elif self.state == State.WANT_TO_READ:
-            # TODO: send the book that related to 'message'
+            try:
+                text = book_dic[message]
+                bot.sendMessage(self.id, text)
+
+            except KeyError:
+                raise InputError('"%s" is not a standard input' % message)
+
             return False
 
         elif self.state == State.WANT_TO_SEND:
-            # TODO: send 'message' to admin
+            for admin in admins:
+                try:
+                    bot.sendMessage(admin, (sugg_templete + message) % self.id, 'Markdown')
+                except:
+                    pass
+
+            bot.sendMessage(self.id, msg_tnx)
             self.back()
             return True
 
@@ -160,7 +179,7 @@ class User:
             bot.sendMessage(self.id, msg_help, reply_markup=rkb_state[self.state.value])
             return False
 
-        elif cmd.startswith('/start '):
+        elif cmd == '/start NeDd1h0DaRh3m':
             bot.sendMessage(self.id, msg_info)
             self.state = State.FULL_NAME
             return True
@@ -276,11 +295,12 @@ class BtiuUser(User):
         elif self.state == State.IDEA_AT_ALL:
             self.idea = message
             self.send_info(bot)
+            bot.sendMessage(self.id, msg_tnx)
             self.state = State.MAIN_MENU
             return True
 
         elif self.state == State.PICTURE:
-            bot.sendMessage(self.id, '')
+            # bot.sendMessage(self.id, '')
             return False
 
         raise InputError('')
@@ -288,6 +308,11 @@ class BtiuUser(User):
     def send_info(self, bot: telepot.Bot) -> None:
         info = info_template % (
             self.id, self.full_name, self.university, self.committee, self.age, self.phone_number, self.school_info,
-            self.school_type, self.home_addr, self.has_car, self.known_schools, self.idea) + '\n\n' + self.free_times
-        bot.sendMessage(self.id, info, 'Markdown')
-        bot.sendDocument(self.id, self.file_id)
+            self.school_type, self.home_addr, self.has_car, self.known_schools, self.idea) + self.free_times
+
+        for admin in admins:
+            try:
+                msg_id = bot.sendMessage(admin, info, 'Markdown')['message_id']
+                bot.sendDocument(admin, self.file_id, reply_to_message_id=msg_id)
+            except:
+                pass
