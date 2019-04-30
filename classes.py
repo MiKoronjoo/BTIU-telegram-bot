@@ -272,9 +272,9 @@ class BtiuUser(User):
 
         elif self.state == State.HAVE_CAR:
             if message == bl_yes:
-                self.has_car = True
+                self.has_car = bl_yes
             elif message == bl_no:
-                self.has_car = False
+                self.has_car = bl_no
             else:
                 raise InputError('')
 

@@ -105,3 +105,4 @@ venv.bak/
 
 .idea/
 config.py
+nohup.out
